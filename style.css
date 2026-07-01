@@ -1,0 +1,477 @@
+/* =========================================================
+   Temperature Converter — Stylesheet
+   Theme: Blue / Purple / White glassmorphism
+   ========================================================= */
+
+/* ---------- Design tokens ---------- */
+:root {
+  /* Palette */
+  --blue-deep: #1e3a8a;
+  --blue: #2563eb;
+  --indigo: #4f46e5;
+  --purple: #7c3aed;
+  --purple-light: #a78bfa;
+  --white: #ffffff;
+
+  /* Surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.14);
+  --glass-bg-strong: rgba(255, 255, 255, 0.22);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --input-bg: rgba(255, 255, 255, 0.12);
+
+  /* Text */
+  --text-onGlass: #ffffff;
+  --text-onGlass-muted: rgba(255, 255, 255, 0.75);
+  --text-dark: #241f4f;
+  --text-dark-muted: #5b5583;
+
+  /* Feedback */
+  --error: #ffd6d6;
+  --error-strong: #ff6b6b;
+
+  /* Shape & motion */
+  --radius-lg: 28px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+  --shadow-card: 0 20px 60px rgba(20, 10, 60, 0.35);
+  --shadow-btn: 0 10px 24px rgba(79, 70, 229, 0.45);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Reset ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  color: var(--text-onGlass);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  position: relative;
+
+  /* Animated blue -> purple -> white-tinted gradient backdrop */
+  background: linear-gradient(
+    135deg,
+    var(--blue-deep) 0%,
+    var(--indigo) 35%,
+    var(--purple) 65%,
+    var(--blue) 100%
+  );
+  background-size: 300% 300%;
+  animation: gradientDrift 16s ease-in-out infinite;
+}
+
+@keyframes gradientDrift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Soft ambient light blobs for depth */
+.bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-blob--one {
+  width: 380px;
+  height: 380px;
+  background: var(--purple-light);
+  top: -120px;
+  left: -100px;
+}
+.bg-blob--two {
+  width: 320px;
+  height: 320px;
+  background: var(--white);
+  bottom: -100px;
+  right: -80px;
+  opacity: 0.18;
+}
+
+/* ---------- Layout ---------- */
+.page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 460px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ---------- Glass card ---------- */
+.card {
+  width: 100%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  padding: 40px 36px;
+  animation: cardEnter 0.6s var(--ease) both;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- Header ---------- */
+.card__header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple-light), var(--white));
+  color: var(--indigo);
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Gentle rising mercury animation inside the thermometer icon */
+.icon--thermometer .icon__mercury {
+  animation: mercuryRise 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+@keyframes mercuryRise {
+  0%, 100% { transform: scaleY(0.6); }
+  50% { transform: scaleY(1); }
+}
+
+h1 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  letter-spacing: -0.02em;
+}
+
+.card__subtitle {
+  margin-top: 6px;
+  font-size: 0.92rem;
+  color: var(--text-onGlass-muted);
+}
+
+/* ---------- Form ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0; /* allow flex item to shrink below its content's intrinsic width */
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-onGlass-muted);
+  letter-spacing: 0.01em;
+}
+
+input[type="number"],
+select {
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  color: var(--text-onGlass);
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  outline: none;
+  transition: border-color 0.25s var(--ease), background 0.25s var(--ease),
+    box-shadow 0.25s var(--ease), transform 0.15s var(--ease);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Remove number input spin buttons for a cleaner look */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+select option {
+  color: var(--text-dark);
+  background: var(--white);
+}
+
+input:focus,
+select:focus {
+  border-color: var(--purple-light);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.28);
+}
+
+/* Shake animation applied via JS when validation fails */
+input.input--invalid {
+  animation: shake 0.4s var(--ease);
+  border-color: var(--error-strong);
+  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.25);
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* From / To row */
+.field-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.swap-btn {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-strong);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 1px;
+  transition: transform 0.35s var(--ease), background 0.25s var(--ease);
+}
+.swap-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.swap-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.swap-btn:active {
+  transform: rotate(180deg) scale(0.94);
+}
+.swap-btn.swap-btn--spin {
+  transform: rotate(180deg);
+}
+
+/* Error message */
+.error-message {
+  min-height: 1.1em;
+  font-size: 0.85rem;
+  color: var(--error);
+  font-weight: 500;
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+.error-message:empty {
+  opacity: 0;
+}
+
+/* ---------- Buttons ---------- */
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.btn {
+  flex: 1;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    background 0.2s var(--ease), opacity 0.2s var(--ease);
+}
+
+.btn--primary {
+  color: var(--white);
+  background: linear-gradient(135deg, var(--indigo), var(--purple));
+  box-shadow: var(--shadow-btn);
+}
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(79, 70, 229, 0.55);
+}
+.btn--primary:active {
+  transform: translateY(0);
+}
+
+.btn--ghost {
+  color: var(--text-onGlass);
+  background: transparent;
+  border: 1px solid var(--glass-border);
+}
+.btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+.btn--ghost:active {
+  transform: translateY(0);
+}
+
+/* ---------- Result card ---------- */
+.result-card {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+  color: var(--text-dark);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: 0 14px 34px rgba(20, 10, 60, 0.25);
+  animation: resultReveal 0.45s var(--ease) both;
+}
+
+@keyframes resultReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.result-card .icon--result {
+  background: linear-gradient(135deg, var(--indigo), var(--purple));
+  color: var(--white);
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.result-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.result-card__label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-dark-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.result-card__value {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* ---------- Footer ---------- */
+.page-footer {
+  text-align: center;
+  color: var(--text-onGlass-muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- Responsive breakpoints ---------- */
+
+/* Tablet */
+@media (max-width: 600px) {
+  .card {
+    padding: 32px 24px;
+  }
+}
+
+/* Mobile: stack the From/To selects, rotate swap button */
+@media (max-width: 460px) {
+  .field-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .swap-btn {
+    align-self: center;
+    transform: rotate(90deg);
+  }
+  .swap-btn:active {
+    transform: rotate(270deg) scale(0.94);
+  }
+
+  .button-row {
+    flex-direction: column;
+  }
+
+  .card {
+    padding: 28px 20px;
+    border-radius: var(--radius-md);
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  body {
+    animation: none;
+  }
+}
